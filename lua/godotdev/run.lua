@@ -152,12 +152,17 @@ local function run_godot(args)
     return false
   end
 
-  if vim.fn.executable("godot") ~= 1 then
+  local godot_exe;
+  if vim.fn.executable("godot") == 1 then
+    godot_exe = "godot"
+  elseif vim.fn.executable("godot-mono") == 1 then
+    godot_exe = "godot-mono"
+  else
     vim.notify("'godot' not found in PATH", vim.log.levels.ERROR)
     return false
   end
 
-  local cmd = { "godot", "--path", root }
+  local cmd = { godot_exe, "--path", root }
   vim.list_extend(cmd, args or {})
 
   local run_console = require("godotdev.run_console")

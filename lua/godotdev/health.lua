@@ -120,7 +120,17 @@ end
 local function report_godot_version()
   health.start("Godot version")
 
-  local godot_result = run_command({ "godot", "--version" })
+  local godot_exe;
+  if vim.fn.executable("godot") == 1 then
+    godot_exe = "godot"
+  elseif vim.fn.executable("godot-mono") == 1 then
+    godot_exe = "godot-mono"
+  else
+    vim.notify("'godot' not found in PATH", vim.log.levels.ERROR)
+    return false
+  end
+
+  local godot_result = run_command({ godot_exe, "--version" })
   if godot_result and godot_result.code == 0 and godot_result.stdout and godot_result.stdout ~= "" then
     local ver = vim.trim(godot_result.stdout)
     health.ok("Godot detected: " .. ver)
